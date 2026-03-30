@@ -118,9 +118,46 @@ The configuration is organized into reusable modules:
 - Boot diagnostics enabled
 - Premium ACR SKU for advanced security
 
-## Cleanup
+## Remote Backend Setup
 
-To destroy the resources:
-```
-terraform destroy
-```
+This configuration uses Azure Storage Account as remote backend for state management and locking.
+
+### Initial Setup
+
+1. **Create backend resources** (run once):
+   ```bash
+   # Ensure all backend-*.tf files have commented backend blocks
+   terraform init
+   terraform apply -target=azurerm_resource_group.backend_rg -target=azurerm_storage_account.backend_storage -target=azurerm_storage_container.backend_container -target=azurerm_storage_container.backend_container_dev -target=azurerm_storage_container.backend_container_qa -target=azurerm_storage_container.backend_container_prod
+   ```
+
+2. **Configure remote backend for your environment**:
+   ```bash
+   # For dev environment:
+   # Uncomment the backend block in backend-dev.tf
+   terraform init  # This will migrate state to remote backend
+
+   # For qa:
+   # Uncomment the backend block in backend-qa.tf
+   terraform init
+
+   # For prod:
+   # Uncomment the backend block in backend-prod.tf
+   terraform init
+   ```
+
+### Backend Features
+
+- **State Storage**: Terraform state stored securely in Azure Storage
+- **State Locking**: Automatic locking using Azure blob leases (prevents concurrent modifications)
+- **State Versioning**: Blob versioning enabled for state history
+- **Access Control**: Private container with RBAC permissions
+- **Environment Isolation**: Separate containers for dev/qa/prod
+
+### Security Considerations
+
+- Use separate storage account for backend
+- Enable blob versioning for state recovery
+- Restrict access using storage account firewalls
+- Use Azure AD authentication for backend access
+- Each environment has isolated state
