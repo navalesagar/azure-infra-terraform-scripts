@@ -54,3 +54,55 @@ variable "tags" {
     Project     = "Jenkins-SonarQube"
   }
 }
+
+# AKS Variables
+variable "aks_cluster_name" {
+  description = "Name of the AKS cluster"
+  type        = string
+  default     = "my-aks-cluster"
+}
+
+variable "aks_node_count" {
+  description = "Number of nodes in AKS default pool"
+  type        = number
+  default     = 2
+}
+
+variable "aks_vm_size" {
+  description = "VM size for AKS nodes"
+  type        = string
+  default     = "Standard_DS2_v2"
+}
+
+# PostgreSQL Variables
+variable "postgresql_server_name" {
+  description = "Name of the PostgreSQL server"
+  type        = string
+  default     = "my-postgresql-server"
+}
+
+variable "postgresql_admin_password" {
+  description = "Administrator password for PostgreSQL"
+  type        = string
+  sensitive   = true
+  default     = "P@ssw0rd123!"  # Change this!
+}
+
+variable "postgresql_sku" {
+  description = "SKU for PostgreSQL server"
+  type        = string
+  default     = "B_Gen5_1"
+}
+
+# Redis Variables
+variable "redis_name" {
+  description = "Name of the Redis cache"
+  type        = string
+  default     = "my-redis-cache"
+}
+
+variable "redis_sku" {
+  description = "SKU for Redis cache"
+  type        = string
+  default     = "Basic"
+}

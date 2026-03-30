@@ -46,3 +46,37 @@ module "acr" {
   resource_group_name = module.resource_group.name
   tags                = var.tags
 }
+
+# AKS Module
+module "aks" {
+  source              = "./modules/aks"
+  cluster_name        = var.aks_cluster_name
+  dns_prefix          = var.aks_cluster_name
+  node_count          = var.aks_node_count
+  vm_size             = var.aks_vm_size
+  subnet_id           = module.networking.subnet_id
+  location            = var.location
+  resource_group_name = module.resource_group.name
+  tags                = var.tags
+}
+
+# PostgreSQL Module
+module "postgresql" {
+  source                       = "./modules/postgresql"
+  server_name                  = var.postgresql_server_name
+  administrator_login_password = var.postgresql_admin_password
+  sku_name                     = var.postgresql_sku
+  location                     = var.location
+  resource_group_name          = module.resource_group.name
+  tags                         = var.tags
+}
+
+# Redis Module
+module "redis" {
+  source              = "./modules/redis"
+  redis_name          = var.redis_name
+  sku_name            = var.redis_sku
+  location            = var.location
+  resource_group_name = module.resource_group.name
+  tags                = var.tags
+}
