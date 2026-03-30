@@ -19,39 +19,79 @@ All modules follow CIS Benchmark best practices for Azure security.
 - Terraform installed (v1.0+)
 - SSH public key for VM authentication
 
+## Environment-Based Folder Structure
+
+This repository uses a folder-based approach for environment management:
+
+```
+environments/
+├── dev/           # Development environment
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   └── terraform.tfvars
+├── qa/            # QA environment
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   └── terraform.tfvars
+└── prod/          # Production environment
+    ├── main.tf
+    ├── variables.tf
+    ├── outputs.tf
+    └── terraform.tfvars
+
+modules/           # Shared Terraform modules
+└── ...
+```
+
+Each environment folder contains:
+- **main.tf**: Module calls and provider configuration
+- **variables.tf**: Environment-specific variable definitions
+- **outputs.tf**: Output definitions
+- **terraform.tfvars**: Variable values (add your SSH key here)
+
 ## Usage
 
-1. Clone this repository.
+### Deploy Development Environment
 
-2. Generate SSH key pair (if not already done):
-   ```
-   ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-   ```
+```bash
+cd environments/dev
+terraform init
+terraform plan
+terraform apply
+```
 
-3. Update the appropriate `.tfvars` file with your SSH public key:
-   ```
-   ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC..."
-   ```
+### Deploy QA Environment
 
-4. Initialize Terraform:
-   ```
-   terraform init
-   ```
+```bash
+cd environments/qa
+terraform init
+terraform plan
+terraform apply
+```
 
-5. Review the plan for your environment:
-   ```
-   terraform plan -var-file=dev.tfvars
-   ```
+### Deploy Production Environment
 
-6. Apply the configuration:
-   ```
-   terraform apply -var-file=dev.tfvars
-   ```
+```bash
+cd environments/prod
+terraform init
+terraform plan
+terraform apply
+```
 
-7. After deployment, you can:
-   - SSH into the VM using the public IP output
-   - Access ACR using the login server and credentials
-   - Connect to AKS using `az aks get-credentials --resource-group <rg> --name <cluster>`
+### Backend Setup
+
+Before deploying any environment, ensure the backend resources exist:
+
+```bash
+# From root directory
+terraform apply -target=azurerm_resource_group.backend_rg \
+                -target=azurerm_storage_account.backend_storage \
+                -target=azurerm_storage_container.backend_container_dev \
+                -target=azurerm_storage_container.backend_container_qa \
+                -target=azurerm_storage_container.backend_container_prod
+```
 
 ## Environments
 
